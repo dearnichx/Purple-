@@ -149,7 +149,7 @@
                     <rect x="2" y="2" width="calc(100% - 4px)" height="calc(100% - 4px)" rx="34" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="12 12" stroke-linecap="round" class="animate-dash" />
                 </svg>
                 <div class="rounded-[28px] overflow-hidden relative shadow-sm border-[4px] border-white">
-                    <img src="https://i.postimg.cc/85zXvskR/480-4-20240516215850.png" alt="บัญชี Jellybearjempire" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/600x600/fecaca/991b1b?text=Jellybearjempire'">
+                    <img src="PNG.png" alt="บัญชี Jellybearjempire" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/600x600/fecaca/991b1b?text=Jellybearjempire'">
                 </div>
             </div>
 
@@ -285,6 +285,19 @@
 
     <script>
         function copyText(text, containerElement, type) {
+            // ใช้ Clipboard API รูปแบบใหม่เพื่อให้รองรับเบราว์เซอร์บนมือถือได้เสถียรยิ่งขึ้น
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    handleCopySuccess(containerElement, type);
+                }).catch(err => {
+                    fallbackCopy(text, containerElement, type);
+                });
+            } else {
+                fallbackCopy(text, containerElement, type);
+            }
+        }
+
+        function fallbackCopy(text, containerElement, type) {
             const textArea = document.createElement("textarea");
             textArea.value = text;
             textArea.style.position = "fixed";
@@ -293,31 +306,31 @@
             document.body.appendChild(textArea);
             textArea.focus();
             textArea.select();
-
             try {
                 document.execCommand('copy');
-                
-                showToast();
-
-                const buttonElement = containerElement.querySelector(type === 'kbank' ? '.kbank-btn' : '.true-btn');
-                const originalHtml = buttonElement.innerHTML;
-                
-                buttonElement.innerHTML = `✅ สำเร็จ`;
-                buttonElement.classList.replace('bg-white', 'bg-white/20');
-                buttonElement.classList.replace('text-xmasGreen-800', 'text-white');
-                buttonElement.classList.replace('text-xmasRed-700', 'text-white');
-                
-                setTimeout(() => {
-                    buttonElement.innerHTML = originalHtml;
-                    buttonElement.classList.replace('bg-white/20', 'bg-white');
-                    buttonElement.classList.replace('text-white', type === 'kbank' ? 'text-xmasGreen-800' : 'text-xmasRed-700');
-                }, 2000);
-
+                handleCopySuccess(containerElement, type);
             } catch (err) {
                 console.error('ไม่สามารถคัดลอกได้:', err);
             }
-
             document.body.removeChild(textArea);
+        }
+
+        function handleCopySuccess(containerElement, type) {
+            showToast();
+
+            const buttonElement = containerElement.querySelector(type === 'kbank' ? '.kbank-btn' : '.true-btn');
+            const originalHtml = buttonElement.innerHTML;
+            
+            buttonElement.innerHTML = `✅ สำเร็จ`;
+            buttonElement.classList.replace('bg-white', 'bg-white/20');
+            buttonElement.classList.replace('text-xmasGreen-800', 'text-white');
+            buttonElement.classList.replace('text-xmasRed-700', 'text-white');
+            
+            setTimeout(() => {
+                buttonElement.innerHTML = originalHtml;
+                buttonElement.classList.replace('bg-white/20', 'bg-white');
+                buttonElement.classList.replace('text-white', type === 'kbank' ? 'text-xmasGreen-800' : 'text-xmasRed-700');
+            }, 2000);
         }
 
         function showToast() {
